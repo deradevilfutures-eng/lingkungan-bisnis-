@@ -172,7 +172,36 @@
 
 
 
-  /* Audio dinonaktifkan: tidak ada backsound pada slide mana pun. */
+  /* ---------- backsound khusus slide penutup ---------- */
+  var closingAudio = new Audio('assets/where-have-you-been-rihanna.mp3');
+  closingAudio.loop = true;
+  closingAudio.preload = 'auto';
+  closingAudio.volume = 0;
+  var audioFadeTimer = null;
+  function fadeClosingAudio(shouldPlay) {
+    if (audioFadeTimer) { clearInterval(audioFadeTimer); audioFadeTimer = null; }
+    if (shouldPlay) {
+      var playResult = closingAudio.play();
+      if (playResult && typeof playResult.catch === 'function') playResult.catch(function () {});
+    }
+    var startVolume = closingAudio.volume;
+    var targetVolume = shouldPlay ? 0.32 : 0;
+    var startedAt = Date.now();
+    var duration = shouldPlay ? 1800 : 1200;
+    audioFadeTimer = setInterval(function () {
+      var progress = Math.min(1, (Date.now() - startedAt) / duration);
+      closingAudio.volume = Math.max(0, Math.min(0.32, startVolume + (targetVolume - startVolume) * progress));
+      if (progress >= 1) {
+        clearInterval(audioFadeTimer);
+        audioFadeTimer = null;
+        if (!shouldPlay) closingAudio.pause();
+      }
+    }, 40);
+  }
+  function syncClosingAudio(slideIndex) {
+    if (slideIndex === slides.length - 1) fadeClosingAudio(true);
+    else if (!closingAudio.paused || closingAudio.volume > 0) fadeClosingAudio(false);
+  }
 
   /* ---------- satu tautan per slide (#id) + salin tautan ---------- */
   var ids = {}; slides.forEach(function (s, i) { ids[s.id] = i; });
@@ -200,6 +229,7 @@
     var changed = i !== current;
     origSet(i);
     stage(i);
+    syncClosingAudio(i);
     if (changed) { try { history.replaceState(null, '', '#' + slides[i].id); } catch (e) {} }
   };
   function goHash(smooth) {
