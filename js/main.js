@@ -200,7 +200,6 @@
     var changed = i !== current;
     origSet(i);
     stage(i);
-    audioFor(i);
     if (changed) { try { history.replaceState(null, '', '#' + slides[i].id); } catch (e) {} }
   };
   function goHash(smooth) {
