@@ -173,7 +173,7 @@
 
 
   /* ---------- backsound di slide terakhir ---------- */
-  var au = new Audio('assets/backsound.mp3'); au.loop = true; au.preload = 'auto'; au.volume = 0;
+  var au = new Audio('assets/backsound-rihanna.mp3'); au.loop = true; au.preload = 'auto'; au.volume = 0;
   var wantSound = true, fadeT = null, sndBtn = null, lastIdx = slides.length - 1;
   function fade(to, ms, done) {
     clearInterval(fadeT);
