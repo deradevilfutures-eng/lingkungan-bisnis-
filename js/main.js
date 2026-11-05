@@ -172,40 +172,59 @@
 
 
 
-  /* ---------- backsound di slide terakhir ---------- */
-  var au = new Audio('assets/backsound-rihanna.mp3?v=3'); au.loop = true; au.preload = 'auto'; au.volume = 0;
-  var wantSound = true, fadeT = null, sndBtn = null, lastIdx = slides.length - 1;
+  /* ---------- backsound otomatis di slide terakhir ---------- */
+  var au = new Audio('assets/backsound-rihanna.mp3?v=4');
+  au.loop = true;
+  au.preload = 'auto';
+  au.volume = 0;
+  var wantSound = true, fadeT = null, lastIdx = slides.length - 1;
+
   function fade(to, ms, done) {
     clearInterval(fadeT);
     var from = au.volume, t0 = performance.now();
     fadeT = setInterval(function () {
       var k = Math.min(1, (performance.now() - t0) / ms);
       au.volume = Math.max(0, Math.min(1, from + (to - from) * k));
-      if (k >= 1) { clearInterval(fadeT); if (done) done(); }
+      if (k >= 1) {
+        clearInterval(fadeT);
+        if (done) done();
+      }
     }, 40);
   }
-  function sndLabel() { if (sndBtn) sndBtn.textContent = (!au.paused && wantSound) ? 'Matikan suara' : 'Nyalakan suara'; }
+
   function startSound() {
-    if (!wantSound) return;
+    if (!wantSound || !au.paused) return;
     var p = au.play();
-    if (p && p.then) p.then(function () { fade(0.6, 2500); sndLabel(); }).catch(function () { sndLabel(); });
+    if (p && p.then) {
+      p.then(function () { fade(0.6, 2500); })
+       .catch(function () { /* Browser may require another user gesture; retry below. */ });
+    }
   }
-  function stopSound() { fade(0, 900, function () { au.pause(); sndLabel(); }); }
-  function audioFor(i) { if (i === lastIdx) startSound(); else if (!au.paused) stopSound(); }
-  var tw = document.querySelector('#terima-kasih .thanks-wrap');
-  if (tw) {
-    sndBtn = document.createElement('button'); sndBtn.type = 'button'; sndBtn.className = 'snd'; sndBtn.textContent = 'Nyalakan suara';
-    sndBtn.addEventListener('click', function () {
-      if (!au.paused && wantSound) { wantSound = false; stopSound(); } else { wantSound = true; startSound(); }
-      setTimeout(sndLabel, 80);
-    });
-    tw.appendChild(sndBtn);
-    au.addEventListener('error', function () { sndBtn.hidden = true; });
+
+  function stopSound() {
+    if (au.paused && au.volume === 0) return;
+    fade(0, 2200, function () { au.pause(); });
   }
-  ['pointerdown', 'keydown', 'touchend'].forEach(function (ev) {
-    window.addEventListener(ev, function () { if (current === lastIdx && wantSound && au.paused && !au.error) startSound(); }, { passive: true });
+
+  function audioFor(i) {
+    if (i === lastIdx) startSound();
+    else stopSound();
+  }
+
+  /* Retry autoplay after a user gesture if the browser initially blocks playback. */
+  ['pointerdown', 'keydown', 'touchend', 'wheel'].forEach(function (ev) {
+    window.addEventListener(ev, function () {
+      if (current === lastIdx && wantSound && au.paused) startSound();
+    }, { passive: true });
   });
-  document.addEventListener('visibilitychange', function () { if (document.hidden) au.pause(); else if (current === lastIdx && wantSound) startSound(); });
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) {
+      au.pause();
+    } else if (current === lastIdx && wantSound) {
+      startSound();
+    }
+  });
 
   /* ---------- satu tautan per slide (#id) + salin tautan ---------- */
   var ids = {}; slides.forEach(function (s, i) { ids[s.id] = i; });
