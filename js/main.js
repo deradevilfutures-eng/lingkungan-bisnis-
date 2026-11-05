@@ -172,59 +172,7 @@
 
 
 
-  /* ---------- backsound otomatis di slide terakhir ---------- */
-  var au = new Audio('assets/backsound-rihanna.mp3?v=4');
-  au.loop = true;
-  au.preload = 'auto';
-  au.volume = 0;
-  var wantSound = true, fadeT = null, lastIdx = slides.length - 1;
-
-  function fade(to, ms, done) {
-    clearInterval(fadeT);
-    var from = au.volume, t0 = performance.now();
-    fadeT = setInterval(function () {
-      var k = Math.min(1, (performance.now() - t0) / ms);
-      au.volume = Math.max(0, Math.min(1, from + (to - from) * k));
-      if (k >= 1) {
-        clearInterval(fadeT);
-        if (done) done();
-      }
-    }, 40);
-  }
-
-  function startSound() {
-    if (!wantSound || !au.paused) return;
-    var p = au.play();
-    if (p && p.then) {
-      p.then(function () { fade(0.6, 2500); })
-       .catch(function () { /* Browser may require another user gesture; retry below. */ });
-    }
-  }
-
-  function stopSound() {
-    if (au.paused && au.volume === 0) return;
-    fade(0, 2200, function () { au.pause(); });
-  }
-
-  function audioFor(i) {
-    if (i === lastIdx) startSound();
-    else stopSound();
-  }
-
-  /* Retry autoplay after a user gesture if the browser initially blocks playback. */
-  ['pointerdown', 'keydown', 'touchend', 'wheel'].forEach(function (ev) {
-    window.addEventListener(ev, function () {
-      if (current === lastIdx && wantSound && au.paused) startSound();
-    }, { passive: true });
-  });
-
-  document.addEventListener('visibilitychange', function () {
-    if (document.hidden) {
-      au.pause();
-    } else if (current === lastIdx && wantSound) {
-      startSound();
-    }
-  });
+  /* Audio dinonaktifkan: tidak ada backsound pada slide mana pun. */
 
   /* ---------- satu tautan per slide (#id) + salin tautan ---------- */
   var ids = {}; slides.forEach(function (s, i) { ids[s.id] = i; });
