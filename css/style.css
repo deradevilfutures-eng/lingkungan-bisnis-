@@ -393,3 +393,51 @@ html.js .card.reveal.in { animation: none; }
 .snd { font: inherit; font-size: 14px; font-weight: 600; color: #fff; background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .45); border-radius: 999px; padding: 9px 22px; cursor: pointer; transition: background .25s, transform .25s var(--ease), border-color .25s; }
 .snd:hover { background: rgba(255, 184, 0, .2); border-color: var(--gold); transform: translateY(-2px); }
 .snd[hidden] { display: none; }
+
+
+/* Slide 12: tingkatkan kontras dan keterbacaan tabel mikro vs makro */
+#perbedaan .table-scroll {
+  background: #ffffff;
+  border: 2px solid #cbd5e1;
+}
+#perbedaan .cmp {
+  color: #172033;
+  background: #ffffff;
+  table-layout: fixed;
+}
+#perbedaan .cmp th,
+#perbedaan .cmp td {
+  color: #172033;
+  font-weight: 600;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+#perbedaan .cmp thead th {
+  color: #111827;
+  padding: 18px 16px;
+}
+#perbedaan .cmp thead th.h-cyan {
+  background: #67e8f9;
+}
+#perbedaan .cmp thead th.h-gold {
+  background: #facc15;
+}
+#perbedaan .cmp tbody th {
+  background: #172554;
+  color: #ffffff;
+}
+#perbedaan .cmp tbody td {
+  background: #ffffff;
+  color: #172033;
+}
+#perbedaan .cmp tbody tr:nth-child(even) td {
+  background: #eaf1ff;
+}
+#perbedaan .cmp tbody tr:hover td {
+  background: #fff1b8;
+}
+@media (max-width: 700px) {
+  #perbedaan .cmp { min-width: 600px; }
+  #perbedaan .cmp th,
+  #perbedaan .cmp td { padding: 13px 12px; font-size: 14px; }
+}
